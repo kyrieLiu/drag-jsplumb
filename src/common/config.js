@@ -70,16 +70,44 @@ export const proConfig = {
                 "width":60,
                 "height":60,
                 "name":"开始",
-                "x":293,
-                "y":264,
+                "x":290,
+                "y":260,
                 "documentation":"",
                 "type":"startEvent",
                 "id":"start_OYGB31598597659923",
                 "formKey":""
+            },
+            {
+                "candidateUsers":"",
+                "width":100,
+                "height":60,
+                "name":"用户任务",
+                "candidateGroups":"",
+                "x":498,
+                "y":161,
+                "documentation":"",
+                "type":"userTask",
+                "id":"usertask_activity_AU8JO41598711751805",
+                "formKey":""
             }
         ],
         "connectionData":[
-
+            {
+                "id":"con_6",
+                "type":"sequenceFlow",
+                "renderType":"sequenceFlowNormal",
+                "name":"1",
+                "source":{
+                    "elementId":"start_OYGB31598597659923",
+                    "x":350,
+                    "y":290
+                },
+                "target":{
+                    "elementId":"usertask_activity_AU8JO41598711751805",
+                    "x":498,
+                    "y":191
+                }
+            }
         ]
     },
     pagination: {

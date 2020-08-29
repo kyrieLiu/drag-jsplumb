@@ -229,14 +229,29 @@ export default class Index extends Component {
 
   // DOM挂载完成时调用
   componentDidMount() {
-    this.initFlow();
-    /**
-     * 计算一下绘图区域的高度
-     */
-    let mainContainerHeight = Util.getClientHeight() - 40; //(页头height:40)
-    this.props.setMainContainerHeight(mainContainerHeight);
+    let source={"bpmnAttr":{"bpmnName":"form1","bpmnDescription":"11","processBean":"111"},"nodeData":[{"width":60,"height":60,"name":"开始","x":290,"y":260,"documentation":"","type":"startEvent","id":"start_OYGB31598597659923","formKey":""},{"candidateUsers":"","width":100,"height":60,"name":"用户任务","candidateGroups":"","x":498,"y":161,"documentation":"","type":"userTask","id":"usertask_activity_AU8JO41598711751805","formKey":""},{"id":"exclusive_gateway_CD1GUNPH1598713676769","name":"排他网关","type":"exclusiveGateway","width":60,"height":60,"x":559,"y":411,"documentation":""}],"connectionData":[{"id":"con_6","type":"sequenceFlow","renderType":"sequenceFlowNormal","name":"1","source":{"elementId":"start_OYGB31598597659923","x":350,"y":290},"target":{"elementId":"usertask_activity_AU8JO41598711751805","x":498,"y":191}},{"name":"3","rulesLanguage":"activiti","renderType":"sequenceFlow","target":{"elementId":"exclusive_gateway_CD1GUNPH1598713676769","x":559,"y":441},"rules":"","documentation":"","type":"sequenceFlow","source":{"elementId":"start_OYGB31598597659923","x":350,"y":290},"id":"con_12"}]}
+    let {setDataSource}=this.props
+    console.log('执行前this.props',this.props)
+    setDataSource(fromJS(source))
+    setTimeout(()=>{
+      console.log('执行后  this.props',this.props)
+      this.initFlow();
+      /**
+       * 计算一下绘图区域的高度
+       */
+      let mainContainerHeight = Util.getClientHeight() - 40; //(页头height:40)
+      this.props.setMainContainerHeight(mainContainerHeight);
+    },1000)
+
+
+
+
     //console.log("窗口可视范围高度", mainContainerHeight);
+    // setTimeout( ()=> {
+    //   // this.upDateAndPaint(this.props.data4, {},  "draggable");
+    // },1000)
   }
+
 
   /**
    * 用于设置一些初始化的变量
@@ -467,6 +482,8 @@ export default class Index extends Component {
    * @returns {{name: string, width: number, x: number, y: number, id: string, type: string, height: number}}
    */
   getNodeInfo(ele) {
+    console.log('ele',ele)
+    if (!ele)return {}
     const id = ele.getAttribute('id')
     const eleName = ele.querySelector('.viso-name')
     const eleSelect = ele.querySelector('.ant-select-selection-selected-value')
@@ -485,86 +502,6 @@ export default class Index extends Component {
       height: parseInt(currentStyle.height, 10) || 80,
       x: parseInt(currentStyle.left, 10) || 0,
       y: parseInt(currentStyle.top, 10) || 0,
-    }
-  }
-
-  // 获取连线数据
-  getConnectionData() {
-    /**
-     * 获取整个连线的数据
-     * @type {Object}
-     */
-    const originalData = this.jsPlumbForword.getAllConnections()
-    const connectionData = []
-    console.log("元素的x坐标", originalData[0].endpoints[0].canvas.offsetLeft);
-    originalData.forEach((item) => {
-      const anchorSource = item.endpoints[0].anchor;
-      const anchorTarget = item.endpoints[1].anchor;
-      const anchorSourceInfo = {
-        name: anchorSource.type,
-        x: anchorSource.x,
-        y: anchorSource.y,
-      }
-      const anchorTargetInfo = {
-        name: anchorTarget.type,
-        x: anchorTarget.x,
-        y: anchorTarget.y,
-      }
-      console.log("anchorSourceInfo---", originalData);
-      const anchorSourcePosition = this.getAnchorPosition(anchorSource.elementId, anchorSourceInfo)
-      const anchorTargetPosition = this.getAnchorPosition(anchorTarget.elementId, anchorTargetInfo)
-
-      const overlays = item.getOverlays()
-      //console.log("``````````overlays```````````", overlays);
-      let labelText = ''
-      //console.log(" Object.keys(overlays)",  Object.keys(overlays))
-      Object.keys(overlays).forEach(key => {
-        if (overlays[key].type === 'Label') {
-          labelText = overlays[key].labelText
-        }
-      })
-
-      const infoObj = {
-        // 连线id
-        id: item.id,
-        // label文本
-        label: labelText,
-        // 源节点
-        source: {
-          elementId: anchorSource.elementId,
-          x: anchorSourcePosition.x,
-          y: anchorSourcePosition.y,
-        },
-        // 目标节点
-        target: {
-          elementId: anchorTarget.elementId,
-          x: anchorTargetPosition.x,
-          y: anchorTargetPosition.y,
-        },
-      }
-
-      const condition = ConditionCache[anchorSource.elementId + ':' + anchorTarget.elementId]
-      if (condition) {
-        infoObj['conditionExpression'] = condition
-      }
-
-      connectionData.push(infoObj)
-    })
-
-    return connectionData
-  }
-
-  // 获取节点坐标信息
-  getAnchorPosition(elementId, anchorInfo) {
-    const nodeInfo = this.getNodeInfo(document.getElementById(elementId))
-    console.log("x",nodeInfo.x, "y", nodeInfo.y);
-
-    /**
-     * nodeInfo.x nodeInfo.y是当前拖拽容器内的坐标值
-     */
-    return {
-      x: nodeInfo.x + nodeInfo.width*anchorInfo.x,
-      y: nodeInfo.y + nodeInfo.height*anchorInfo.y,
     }
   }
 
@@ -640,6 +577,7 @@ export default class Index extends Component {
      * 改变nodeList数据，更新dom结构 下面的方法需要用到真实的dom节点,
      * 所以连线这一块是在真实挂载到页面上的Dom上去操作的
      **/
+
     /**
      * 设置默认表现
      */
@@ -649,12 +587,15 @@ export default class Index extends Component {
     /**
      * 创建连线
      */
-    connectionData.forEach((info) => {
-      // if (info.conditionExpression) {
-      //   ConditionCache[info.source.elementId + ':' + info.target.elementId] = info.conditionExpression
-      // }
-      this.setConnection(info)
+    setTimeout(()=>{
+      connectionData.forEach((info) => {
+        // if (info.conditionExpression) {
+        //   ConditionCache[info.source.elementId + ':' + info.target.elementId] = info.conditionExpression
+        // }
+        this.setConnection(info)
+      },2000)
     })
+
   }
 
   /**
