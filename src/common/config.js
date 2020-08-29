@@ -60,13 +60,27 @@ export const proConfig = {
     candidateGroupsPageList: "/role/pagedlist", // 用户组任务节点groups分页请求
     connectionCircleRadius: 4,
     dataSource: {
-        "bpmnAttr": {
-            bpmnName: "",
-            bpmnDescription: "",
-            processBean: ""
-        }, //全局表单属性数组
-        "nodeData": [],
-        "connectionData": []
+        "bpmnAttr":{
+            "bpmnName":"form1",
+            "bpmnDescription":"11",
+            "processBean":"111"
+        },
+        "nodeData":[
+            {
+                "width":60,
+                "height":60,
+                "name":"开始",
+                "x":293,
+                "y":264,
+                "documentation":"",
+                "type":"startEvent",
+                "id":"start_OYGB31598597659923",
+                "formKey":""
+            }
+        ],
+        "connectionData":[
+
+        ]
     },
     pagination: {
         defaultCurrent: 1,
