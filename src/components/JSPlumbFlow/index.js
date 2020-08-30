@@ -229,27 +229,36 @@ export default class Index extends Component {
 
   // DOM挂载完成时调用
   componentDidMount() {
-    let source={"bpmnAttr":{"bpmnName":"form1","bpmnDescription":"11","processBean":"111"},"nodeData":[{"width":60,"height":60,"name":"开始","x":290,"y":260,"documentation":"","type":"startEvent","id":"start_OYGB31598597659923","formKey":""},{"candidateUsers":"","width":100,"height":60,"name":"用户任务","candidateGroups":"","x":498,"y":161,"documentation":"","type":"userTask","id":"usertask_activity_AU8JO41598711751805","formKey":""},{"id":"exclusive_gateway_CD1GUNPH1598713676769","name":"排他网关","type":"exclusiveGateway","width":60,"height":60,"x":559,"y":411,"documentation":""}],"connectionData":[{"id":"con_6","type":"sequenceFlow","renderType":"sequenceFlowNormal","name":"1","source":{"elementId":"start_OYGB31598597659923","x":350,"y":290},"target":{"elementId":"usertask_activity_AU8JO41598711751805","x":498,"y":191}},{"name":"3","rulesLanguage":"activiti","renderType":"sequenceFlow","target":{"elementId":"exclusive_gateway_CD1GUNPH1598713676769","x":559,"y":441},"rules":"","documentation":"","type":"sequenceFlow","source":{"elementId":"start_OYGB31598597659923","x":350,"y":290},"id":"con_12"}]}
-    let {setDataSource}=this.props
-    console.log('执行前this.props',this.props)
-    setDataSource(fromJS(source))
-    setTimeout(()=>{
-      console.log('执行后  this.props',this.props)
-      this.initFlow();
-      /**
-       * 计算一下绘图区域的高度
-       */
-      let mainContainerHeight = Util.getClientHeight() - 40; //(页头height:40)
-      this.props.setMainContainerHeight(mainContainerHeight);
-    },1000)
+   this.initData().then(result=>{
+     this.initFlow();
+     /**
+      * 计算一下绘图区域的高度
+      */
+     let mainContainerHeight = Util.getClientHeight() - 40; //(页头height:40)
+     this.props.setMainContainerHeight(mainContainerHeight);
+    })
 
 
-
+   //  this.initData()
 
     //console.log("窗口可视范围高度", mainContainerHeight);
     // setTimeout( ()=> {
     //   // this.upDateAndPaint(this.props.data4, {},  "draggable");
     // },1000)
+  }
+
+   initData(){
+    return new Promise((resolve,reject)=>{
+      console.log('初始化数据')
+      let source={"bpmnAttr":{"bpmnName":"form1","bpmnDescription":"11","processBean":"111"},"nodeData":[{"width":60,"height":60,"name":"开始","x":290,"y":260,"documentation":"","type":"startEvent","id":"start_OYGB31598597659923","formKey":""},{"candidateUsers":"","width":100,"height":60,"name":"用户任务","candidateGroups":"","x":498,"y":161,"documentation":"","type":"userTask","id":"usertask_activity_AU8JO41598711751805","formKey":""},{"id":"exclusive_gateway_CD1GUNPH1598713676769","name":"排他网关","type":"exclusiveGateway","width":60,"height":60,"x":559,"y":411,"documentation":""}],"connectionData":[{"id":"con_6","type":"sequenceFlow","renderType":"sequenceFlowNormal","name":"1","source":{"elementId":"start_OYGB31598597659923","x":350,"y":290},"target":{"elementId":"usertask_activity_AU8JO41598711751805","x":498,"y":191}},{"name":"3","rulesLanguage":"activiti","renderType":"sequenceFlow","target":{"elementId":"exclusive_gateway_CD1GUNPH1598713676769","x":559,"y":441},"rules":"","documentation":"","type":"sequenceFlow","source":{"elementId":"start_OYGB31598597659923","x":350,"y":290},"id":"con_12"}]}
+      let {setDataSource}=this.props
+      console.log('执行前this.props',this.props)
+      setDataSource(fromJS(source))
+      setTimeout(()=>{
+        resolve()
+      },1000)
+    })
+
   }
 
 
@@ -482,7 +491,6 @@ export default class Index extends Component {
    * @returns {{name: string, width: number, x: number, y: number, id: string, type: string, height: number}}
    */
   getNodeInfo(ele) {
-    console.log('ele',ele)
     if (!ele)return {}
     const id = ele.getAttribute('id')
     const eleName = ele.querySelector('.viso-name')
@@ -593,7 +601,7 @@ export default class Index extends Component {
         //   ConditionCache[info.source.elementId + ':' + info.target.elementId] = info.conditionExpression
         // }
         this.setConnection(info)
-      },2000)
+      },1000)
     })
 
   }
